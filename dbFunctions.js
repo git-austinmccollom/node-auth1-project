@@ -8,14 +8,13 @@ module.exports = {
 
 //CRUD
 //Create
-async function addUser(user) {
+async function addUser(credentials) {
     try {
-        const id = await db('users').insert(user, 'id'); 
+        const id = await db('users').insert(credentials, 'id'); 
         return findById(id[0]);
     } catch (error) {
         throw error;
     }
-
 }
 
 //Read

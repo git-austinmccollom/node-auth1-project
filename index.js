@@ -1,6 +1,7 @@
 const express = require("express");
 const helmet = require("helmet");
 const dbFun = require("./dbFunctions.js");
+const bcrypt = require("bcryptjs");
 
 const server = express();
 server.use(helmet());
@@ -8,17 +9,33 @@ server.use(express.json());
 
 //CRUD
 //Create / Register
-server.post("/api/register", (req, res) => {});
+server.post("/api/register", (req, res) => {
+  const credentials = req.body;
+
+  const hash = bcrypt.hashSync(credentials.password, 10);
+
+  credentials.password = hash;
+
+  dbFun
+    .addUser(credentials)
+    .then((dbRes) => {
+      res.status(200).json(dbRes);
+    })
+    .catch((dbErr) => {
+      res.status(500).json(dbErr);
+    });
+});
 
 //Read
 server.get("/api/users", (req, res) => {
-    dbFun.findUsers()
-    .then( dbRes => {
-        res.status(200).json(dbRes);
+  dbFun
+    .findUsers()
+    .then((dbRes) => {
+      res.status(200).json(dbRes);
     })
-    .catch( dbErr => {
-        res.status(500).json(dbErr); 
-    })
+    .catch((dbErr) => {
+      res.status(500).json(dbErr);
+    });
 });
 
 server.get("/", (req, res) => {
