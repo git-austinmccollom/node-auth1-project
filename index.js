@@ -12,7 +12,7 @@ server.use(
     name: "notsession", // default is connect.sid
     secret: "nobody tosses a dwarf!",
     cookie: {
-      maxAge: 1 * 24 * 60 * 60 * 1000,
+      maxAge: 1 * 60 * 1000,
       secure: false, // only set cookies over https. Server will not send back a cookie over http.
     }, // 1 day in milliseconds
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
@@ -24,12 +24,12 @@ server.use(
 // Middleware
 
 const restricted = (req, res, next) => {
-    if (req.session && req.session.user) {
-        next();
-    } else {
-        res.status(401).json({ message: 'You shall not pass!'});
-    }
-}
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ message: "You shall not pass!" });
+  }
+};
 
 //CRUD
 //Create / Register
@@ -80,6 +80,20 @@ server.get("/api/users", restricted, (req, res) => {
     .catch((dbErr) => {
       res.status(500).json(dbErr);
     });
+});
+
+//Logout
+
+server.get("/api/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        res.send("error logging out");
+      } else {
+        res.send("good bye");
+      }
+    });
+  }
 });
 
 // Sanity Check
