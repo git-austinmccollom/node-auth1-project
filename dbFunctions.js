@@ -3,7 +3,8 @@ const db = require('./database/connection.js');
 module.exports = {
     addUser,
     findUsers,
-    findById
+    findById,
+    findByUsername
 }
 
 //CRUD
@@ -24,6 +25,10 @@ function findUsers() {
 
 function findById(id) {
     return db('users').where({ id }).first();
+}
+
+function findByUsername(username) {
+    return db('users').where({ username: username }).first();
 }
 
 //Update

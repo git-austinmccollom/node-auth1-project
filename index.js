@@ -2,6 +2,7 @@ const express = require("express");
 const helmet = require("helmet");
 const dbFun = require("./dbFunctions.js");
 const bcrypt = require("bcryptjs");
+const { findUsers } = require("./dbFunctions.js");
 
 const server = express();
 server.use(helmet());
@@ -23,6 +24,24 @@ server.post("/api/register", (req, res) => {
     })
     .catch((dbErr) => {
       res.status(500).json(dbErr);
+    });
+});
+
+server.post("/api/login", (req, res) => {
+  let { username, password } = req.body;
+
+  dbFun
+    .findByUsername(username)
+    .first() //example has this, but I believe it is redundant with the .first() in the findBy dbFunction
+    .then((user) => {
+      if (user && bcrypt.compareSync(password, user.password)) {
+        res.status(200).json({ message: `Welcome: ${user.username}!` });
+      } else {
+        res.status(401).json({ error: "Incorrect credentials" });
+      }
+    })
+    .catch((error) => {
+      res.status(500).json(error);
     });
 });
 
